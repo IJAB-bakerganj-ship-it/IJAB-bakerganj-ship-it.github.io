@@ -333,7 +333,12 @@
                         <span class="w-7 h-7 rounded-lg bg-amber-400 text-primary-dark flex items-center justify-center text-xs shadow-sm"><i class="fas fa-trophy"></i></span>
                         সাংগঠনিক কার্যক্রম র‍্যাংকিং (সেরা শাখা নির্বাচন)
                     </h3>
-                    <span class="text-[11px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">মোট ১০০ পয়েন্ট</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="copyRankingReportWA()" class="px-2.5 py-1 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-[11px] shadow-sm flex items-center gap-1 transition">
+                            <i class="fab fa-whatsapp"></i> রিপোর্ট কপি
+                        </button>
+                        <span class="text-[11px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">১০০ পয়েন্ট</span>
+                    </div>
                 </div>
                 <p class="text-[11px] text-gray-600 mb-3">জনশক্তি গঠন (৩০), নিয়মিত ইয়ানত আদায় (৩০), প্রোগ্রাম ও হাজিরা (২৫) এবং রক্তদাতা ও সুধী সংযুক্তি (১৫)-এর ভিত্তিতে স্বয়ংক্রিয় র‍্যাংকিং:</p>
                 <div id="dash-ranking-list" class="space-y-2.5"></div>
@@ -1138,11 +1143,12 @@
 
         const DEFAULT_LEADER_DESIGNATIONS = [
             "সভাপতি", "সহ-সভাপতি", "সাধারণ সম্পাদক", "যুগ্ম সাধারণ সম্পাদক",
-            "সাংগঠনিক সম্পাদক", "দফতর সম্পাদক", "প্রশিক্ষণ সম্পাদক", "দাওয়া সম্পাদক",
-            "প্রচার সম্পাদক", "প্রকাশনা সম্পাদক", "অর্থ সম্পাদক", "যুব উন্নয়ন সম্পাদক",
-            "কর্মসংস্থান সম্পাদক", "শিক্ষা ও সংস্কৃতি সম্পাদক", "বিজ্ঞান ও প্রযুক্তি সম্পাদক",
-            "তথ্য ও গবেষণা সম্পাদক", "ত্রাণ ও সমাজকল্যাণ সম্পাদক", "স্বাস্থ্য ও পরিবেশ সম্পাদক",
-            "উপ-সম্পাদক", "কার্যনির্বাহী সদস্য"
+            "সাংগঠনিক সম্পাদক", "সাংগঠনিক সম্পাদক (২)", "দফতর সম্পাদক", "প্রশিক্ষণ সম্পাদক",
+            "দাওয়া সম্পাদক", "প্রচার সম্পাদক", "প্রকাশনা সম্পাদক", "অর্থ সম্পাদক",
+            "যুব উন্নয়ন সম্পাদক", "কর্মসংস্থান সম্পাদক", "শিক্ষা ও সংস্কৃতি সম্পাদক",
+            "বিজ্ঞান ও প্রযুক্তি সম্পাদক", "তথ্য ও গবেষণা সম্পাদক", "ত্রাণ ও সমাজকল্যাণ সম্পাদক",
+            "স্বাস্থ্য ও পরিবেশ সম্পাদক", "মহিলা ও পরিবার কল্যাণ সম্পাদক",
+            "উপ-সম্পাদক"
         ];
         let LEADER_DESIGNATIONS = [...DEFAULT_LEADER_DESIGNATIONS];
 
@@ -1318,7 +1324,11 @@
                 .trim();
             if (!target) return 999;
 
-            // 1. First follow exact order configured in Master Settings (LEADER_DESIGNATIONS)
+            // Priority check for Upa-Shompadok & Nirbahi Shodoshsho so they ALWAYS stay at the bottom
+            if (target.includes('উপ সম্পাদক')) return 21;
+            if (target.includes('নির্বাহী সদস্য')) return 22;
+
+            // 1. Follow exact order configured in Master Settings (LEADER_DESIGNATIONS)
             for (let i = 0; i < LEADER_DESIGNATIONS.length; i++) {
                 const itemNorm = normalizeDesignationKey(LEADER_DESIGNATIONS[i])
                     .replace(/[-–—]/g, ' ')
@@ -1327,27 +1337,27 @@
                 if (itemNorm === target) return i + 1;
             }
 
-            // 2. Fallback keyword matching for slight spelling/spacing differences in DB
+            // 2. Fallback keyword matching for slight spelling/typo differences in DB (like 'সম্পাদঃ')
             if (target.includes('সহ সভাপতি')) return 2;
             if (target === 'সভাপতি' || (target.includes('সভাপতি') && !target.includes('সহ'))) return 1;
             if (target.includes('যুগ্ম সাধারণ') || target.includes('যুগ্ম সেক্রেটার')) return 4;
-            if (target.includes('সাধারণ সম্পাদক') || target.includes('সেক্রেটার')) return 3;
+            if (target.includes('সাধারণ সম্পাদক') || target.includes('সাধারণ সম্পাদ') || target.includes('সেক্রেটার')) return 3;
             if (target.includes('সাংগঠনিক')) return 5;
-            if (target.includes('দফতর') || target.includes('দপ্তর')) return 6;
-            if (target.includes('প্রশিক্ষণ') || target.includes('প্রশিক্ষন')) return 7;
-            if (target.includes('দাওয়া') || target.includes('দাওয়া')) return 8;
-            if (target.includes('প্রচার')) return 9;
-            if (target.includes('প্রকাশনা')) return 10;
-            if (target.includes('অর্থ')) return 11;
-            if (target.includes('যুব উন্নয়ন') || target.includes('যুব উন্নয়ন')) return 12;
-            if (target.includes('কর্মসংস্থান')) return 13;
-            if (target.includes('শিক্ষা ও সংস্কৃতি')) return 14;
-            if (target.includes('বিজ্ঞান ও প্রযুক্তি')) return 15;
-            if (target.includes('তথ্য ও গবেষণা')) return 16;
-            if (target.includes('ত্রাণ ও সমাজকল্যাণ')) return 17;
-            if (target.includes('স্বাস্থ্য ও পরিবেশ')) return 18;
-            if (target.includes('উপ সম্পাদক')) return 19;
-            if (target.includes('নির্বাহী সদস্য')) return 20;
+            if (target.includes('দফতর') || target.includes('দপ্তর')) return 7;
+            if (target.includes('প্রশিক্ষণ') || target.includes('প্রশিক্ষন')) return 8;
+            if (target.includes('দাওয়া') || target.includes('দাওয়া')) return 9;
+            if (target.includes('প্রচার')) return 10;
+            if (target.includes('প্রকাশনা')) return 11;
+            if (target.includes('অর্থ')) return 12;
+            if (target.includes('যুব উন্নয়ন') || target.includes('যুব উন্নয়ন')) return 13;
+            if (target.includes('কর্মসংস্থান')) return 14;
+            if (target.includes('শিক্ষা ও সংস্কৃতি')) return 15;
+            if (target.includes('বিজ্ঞান ও প্রযুক্তি')) return 16;
+            if (target.includes('তথ্য ও গবেষণা')) return 17;
+            if (target.includes('ত্রাণ ও সমাজকল্যাণ')) return 18;
+            if (target.includes('স্বাস্থ্য ও পরিবেশ')) return 19;
+            if (target.includes('মহিলা ও পরিবার')) return 20;
+            if (target.includes('সম্পাদক') || target.includes('সম্পাদ')) return 20;
 
             return 999;
         }
@@ -1418,7 +1428,6 @@
                 const key = p ? `${p}_${u}` : '';
                 if (key && byPhoneAndUnion.has(key)) {
                     const existing = byPhoneAndUnion.get(key);
-                    // Preserve photo and valid serial/secondary fields without duplicating within the same union
                     if (!existing.photo && item.photo) existing.photo = item.photo;
                     if ((!existing.serialOrder || existing.serialOrder === 999) && item.serialOrder && item.serialOrder !== 999) {
                         existing.serialOrder = item.serialOrder;
@@ -1682,6 +1691,100 @@
             renderPeopleList();
         };
 
+        // --- COMPUTE LIVE BRANCH RANKING DATA ---
+        function computeBranchRankings() {
+            const targetBranches = UNIONS.filter(u => u !== 'বাকেরগঞ্জ উপজেলা শাখা');
+            const currentYear = String(new Date().getFullYear());
+
+            return targetBranches.map(u => {
+                const branchPeople = peopleData.filter(p => personMatchesUnion(p, u));
+                const leaders = branchPeople.filter(p => p.type === 'leader');
+                const members = branchPeople.filter(p => p.type === 'member');
+                const sudhis = branchPeople.filter(p => p.type === 'sudhi');
+                const donors = branchPeople.filter(p => p.bloodGroup && p.bloodGroup !== '');
+
+                // 1. Manpower Score (Max 30): up to 15 leaders (15 pts) + up to 30 members (15 pts)
+                const leaderPts = Math.min(15, (leaders.length / 15) * 15);
+                const memberPts = Math.min(15, (members.length / 30) * 15);
+                const manpowerScore = Math.round(leaderPts + memberPts);
+
+                // 2. Iyanat Collection Rate Score (Max 30): ratio of active iyanat payers among leaders/members
+                const eligiblePayers = leaders.length + members.length;
+                const uniquePayers = new Set(
+                    financeData
+                        .filter(f => f.union === u && f.type === 'income' && String(f.year || '') === currentYear && (String(f.category || '').includes('ইয়ানত') || String(f.category || '').includes('ইয়ানত')))
+                        .map(f => f.personId || f.personName)
+                        .filter(Boolean)
+                ).size;
+                const iyanatScore = eligiblePayers > 0 ? Math.min(30, Math.round((uniquePayers / eligiblePayers) * 30)) : 0;
+
+                // 3. Program & Attendance Score (Max 25): up to 5 programs (15 pts) + avg attendance % (10 pts)
+                const branchAtts = attendanceData.filter(a => a.union === u);
+                const progCountPts = Math.min(15, (branchAtts.length / 5) * 15);
+                const avgAttPct = branchAtts.length > 0
+                    ? branchAtts.reduce((sum, a) => sum + (a.totalCount > 0 ? (a.presentCount / a.totalCount) : 0), 0) / branchAtts.length
+                    : 0;
+                const attScore = Math.round(progCountPts + (avgAttPct * 10));
+
+                // 4. Blood Donors & Sudhi Engagement Score (Max 15)
+                const donorPts = Math.min(10, (donors.length / 10) * 10);
+                const sudhiPts = Math.min(5, (sudhis.length / 5) * 5);
+                const socialScore = Math.round(donorPts + sudhiPts);
+
+                const totalScore = Math.min(100, manpowerScore + iyanatScore + attScore + socialScore);
+
+                return {
+                    union: u,
+                    totalScore,
+                    manpowerScore,
+                    iyanatScore,
+                    attScore,
+                    socialScore,
+                    leadersCount: leaders.length,
+                    membersCount: members.length,
+                    programsCount: branchAtts.length
+                };
+            }).sort((a, b) => b.totalScore - a.totalScore || b.leadersCount - a.leadersCount);
+        }
+
+        window.copyRankingReportWA = function() {
+            const ranked = computeBranchRankings();
+            const yearBn = toBengaliDigits(new Date().getFullYear());
+            const medals = ['🥇', '🥈', '🥉'];
+            const rankingLines = ranked.map((item, idx) => {
+                const prefix = idx < 3 ? medals[idx] : `${toBengaliDigits(idx + 1)}.`;
+                return `${prefix} *${item.union}* — *${toBengaliDigits(item.totalScore)} পয়েন্ট*\n   _(জনশক্তি: ${toBengaliDigits(item.manpowerScore)}/৩০ | ইয়ানত: ${toBengaliDigits(item.iyanatScore)}/৩০ | প্রোগ্রাম: ${toBengaliDigits(item.attScore)}/২৫ | রক্ত/সুধী: ${toBengaliDigits(item.socialScore)}/১৫)_`;
+            }).join('\n');
+
+            const reportText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+*আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ।*
+
+প্রিয় দায়িত্বশীলবৃন্দ,
+*ইসলামী যুব আন্দোলন বাংলাদেশ, বাকেরগঞ্জ উপজেলা শাখা*-র ডিজিটাল সাংগঠনিক পোর্টালে শাখাভিত্তিক কার্যক্রমের *লাইভ র‍্যাংকিং (${yearBn})* প্রকাশ করা হলো:
+
+🏆 *বর্তমান শাখা র‍্যাংকিং (১০০ পয়েন্টের ভিত্তিতে):*
+${rankingLines}
+
+🎖️ *বিশেষ ঘোষণা ও পুরস্কার:*
+বছর শেষে সার্বিক সাংগঠনিক কার্যক্রমে শীর্ষস্থান অর্জনকারী *সেরা শাখাসমূহকে উপজেলা শাখার পক্ষ থেকে বিশেষভাবে পুরস্কৃত ও সম্মাননা প্রদান* করা হবে, ইনশাআল্লাহ।
+
+সকল শাখার সভাপতি ও সাধারণ সম্পাদককে নিজ নিজ শাখার সদস্য বৃদ্ধি, নিয়মিত ইয়ানত আদায়, প্রোগ্রামের হাজিরা এবং রক্তদাতা ও সুধী তালিকা অ্যাপে হালনাগাদ করে এগিয়ে থাকার আহ্বান জানাচ্ছি।
+
+জাযাকুমুল্লাহু খাইরান।
+— *বাকেরগঞ্জ উপজেলা শাখা*
+ইসলামী যুব আন্দোলন বাংলাদেশ।`;
+
+            navigator.clipboard?.writeText(reportText).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = reportText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            });
+            showToast('লাইভ র‍্যাংকিং রিপোর্ট কপি হয়েছে! এখন হোয়াটসঅ্যাপ গ্রুপে পেস্ট করুন।', 'success');
+        };
+
         // --- DASHBOARD ---
         window.renderPublicDashboard = function() {
             const adminFinCard = document.getElementById('dash-admin-finance-card');
@@ -1719,58 +1822,7 @@
             // Organizational Branch Ranking Leaderboard (9 Union/Pouroshova Branches)
             const rankingList = document.getElementById('dash-ranking-list');
             if (rankingList) {
-                const targetBranches = UNIONS.filter(u => u !== 'বাকেরগঞ্জ উপজেলা শাখা');
-                const currentYear = String(new Date().getFullYear());
-
-                const ranked = targetBranches.map(u => {
-                    const branchPeople = peopleData.filter(p => personMatchesUnion(p, u));
-                    const leaders = branchPeople.filter(p => p.type === 'leader');
-                    const members = branchPeople.filter(p => p.type === 'member');
-                    const sudhis = branchPeople.filter(p => p.type === 'sudhi');
-                    const donors = branchPeople.filter(p => p.bloodGroup && p.bloodGroup !== '');
-
-                    // 1. Manpower Score (Max 30): up to 15 leaders (15 pts) + up to 30 members (15 pts)
-                    const leaderPts = Math.min(15, (leaders.length / 15) * 15);
-                    const memberPts = Math.min(15, (members.length / 30) * 15);
-                    const manpowerScore = Math.round(leaderPts + memberPts);
-
-                    // 2. Iyanat Collection Rate Score (Max 30): ratio of active iyanat payers among leaders/members
-                    const eligiblePayers = leaders.length + members.length;
-                    const uniquePayers = new Set(
-                        financeData
-                            .filter(f => f.union === u && f.type === 'income' && String(f.year || '') === currentYear && (String(f.category || '').includes('ইয়ানত') || String(f.category || '').includes('ইয়ানত')))
-                            .map(f => f.personId || f.personName)
-                            .filter(Boolean)
-                    ).size;
-                    const iyanatScore = eligiblePayers > 0 ? Math.min(30, Math.round((uniquePayers / eligiblePayers) * 30)) : 0;
-
-                    // 3. Program & Attendance Score (Max 25): up to 5 programs (15 pts) + avg attendance % (10 pts)
-                    const branchAtts = attendanceData.filter(a => a.union === u);
-                    const progCountPts = Math.min(15, (branchAtts.length / 5) * 15);
-                    const avgAttPct = branchAtts.length > 0
-                        ? branchAtts.reduce((sum, a) => sum + (a.totalCount > 0 ? (a.presentCount / a.totalCount) : 0), 0) / branchAtts.length
-                        : 0;
-                    const attScore = Math.round(progCountPts + (avgAttPct * 10));
-
-                    // 4. Blood Donors & Sudhi Engagement Score (Max 15)
-                    const donorPts = Math.min(10, (donors.length / 10) * 10);
-                    const sudhiPts = Math.min(5, (sudhis.length / 5) * 5);
-                    const socialScore = Math.round(donorPts + sudhiPts);
-
-                    const totalScore = Math.min(100, manpowerScore + iyanatScore + attScore + socialScore);
-
-                    return {
-                        union: u,
-                        totalScore,
-                        manpowerScore,
-                        iyanatScore,
-                        attScore,
-                        socialScore,
-                        leadersCount: leaders.length,
-                        membersCount: members.length,
-                        programsCount: branchAtts.length
-                    };
-                }).sort((a, b) => b.totalScore - a.totalScore || b.leadersCount - a.leadersCount);
+                const ranked = computeBranchRankings();
 
                 rankingList.innerHTML = ranked.map((item, idx) => {
                     const rank = idx + 1;
@@ -1960,7 +2012,6 @@
                 return true;
             });
 
-            // Sort leaders by designation rank for the currently selected union
             if (targetType === 'leader') {
                 filtered.sort((a, b) => compareLeadersByHierarchy(
                     { ...a, designation: getPersonEffectiveDesignation(a, union) },
@@ -1985,7 +2036,6 @@
                 const effectiveDesig = person.designation;
                 const effectiveBranch = person.union;
 
-                // Strict Permission: Only show Iyanat badge if admin manages this union
                 const isAuthorized = canManageUnion(person.union);
                 const fixedBadge = (isAuthorized && Number(person.fixedIyanat) > 0)
                     ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">৳${toBengaliDigits(person.fixedIyanat)}</span>`
@@ -2079,7 +2129,6 @@
             const iyanatSec = document.getElementById('detail-iyanat-section');
             const adminActions = document.getElementById('detail-admin-actions');
 
-            // Strict Role Check: Only authorized admin for THIS union can see/manage iyanat or edit
             if (isAuthorized) {
                 iyanatSec.classList.remove('hidden');
                 renderPersonIyanatGrid(person);
@@ -2341,7 +2390,6 @@
                     } else {
                         await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'ijab_people'), payload);
                     }
-                    // Keep legacy doc in sync if it came from legacy collection so it never reverts
                     if (existingObj && existingObj.legacyId) {
                         await updateDoc(doc(db, 'members', existingObj.legacyId), {
                             name, designation, union, phone, bloodGroup, fixedIyanat, photoUrl
@@ -2381,7 +2429,6 @@
                         if (person.id && !person.id.startsWith('upz_') && !person.id.startsWith('legacy_')) {
                             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ijab_people', person.id)).catch(() => {});
                         }
-                        // Also remove any duplicate docs with the same phone & union from both collections
                         for (const d of newPeopleDocs) {
                             if (normalizePhone(d.phone) === cleanP && normalizeUnionName(d.union) === person.union) {
                                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'ijab_people', d.id)).catch(() => {});
@@ -2624,7 +2671,6 @@
                 return true;
             });
 
-            // Sort leaders by official designation hierarchy for the active union
             if (pType === 'leader') {
                 list.sort((a, b) => compareLeadersByHierarchy(
                     { ...a, designation: getPersonEffectiveDesignation(a, selectedUnion) },
@@ -2950,11 +2996,6 @@
                 const fixedInfo = Number(p.fixedIyanat) > 0 ? ` — নির্ধারিত: ৳${toBengaliDigits(p.fixedIyanat)}` : '';
                 const effDesig = getPersonEffectiveDesignation(p, selectedUnion);
                 select.innerHTML += `<option value="${p.id}">${p.name} (${effDesig}${fixedInfo})</option>`;
-            });
-
-            filtered.forEach(p => {
-                const fixedInfo = Number(p.fixedIyanat) > 0 ? ` — নির্ধারিত: ৳${toBengaliDigits(p.fixedIyanat)}` : '';
-                select.innerHTML += `<option value="${p.id}">${p.name} (${p.designation}${fixedInfo})</option>`;
             });
         };
 
@@ -3432,7 +3473,6 @@
                     btnSuperSettings.classList.add('hidden');
                     btnNoticeOpen.classList.add('hidden');
                     btnBannerNotice.classList.add('hidden');
-                    // Default Union Admin to their own union
                     if (justLoggedIn) {
                         document.getElementById('union-filter').value = currentUser.union;
                     }
@@ -3471,7 +3511,6 @@
             container.innerHTML = UNIONS.map(u => {
                 const leaders = peopleData.filter(p => p.union === u && p.type === 'leader');
                 const gs = leaders.find(l => getLeaderDesignationRank(l.designation) === 3);
-                // Check if someone with GS-like designation was accidentally saved as 'member' or 'sudhi'
                 const misplacedGs = !gs ? peopleData.find(p => p.union === u && p.type !== 'leader' && (String(p.designation || '').includes('সাধারণ') || String(p.designation || '').includes('সেক্রেটার'))) : null;
 
                 if (gs) {
