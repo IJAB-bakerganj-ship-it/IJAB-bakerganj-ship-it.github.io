@@ -1148,7 +1148,7 @@
             "যুব উন্নয়ন সম্পাদক", "কর্মসংস্থান সম্পাদক", "শিক্ষা ও সংস্কৃতি সম্পাদক",
             "বিজ্ঞান ও প্রযুক্তি সম্পাদক", "তথ্য ও গবেষণা সম্পাদক", "ত্রাণ ও সমাজকল্যাণ সম্পাদক",
             "স্বাস্থ্য ও পরিবেশ সম্পাদক", "মহিলা ও পরিবার কল্যাণ সম্পাদক",
-            "উপ-সম্পাদক"
+            "উপ-সম্পাদক", "উপ-সম্পাদক (২)"
         ];
         let LEADER_DESIGNATIONS = [...DEFAULT_LEADER_DESIGNATIONS];
 
@@ -1325,8 +1325,9 @@
             if (!target) return 999;
 
             // Priority check for Upa-Shompadok & Nirbahi Shodoshsho so they ALWAYS stay at the bottom
+            if (target.includes('উপ সম্পাদক') && target.includes('২')) return 22;
             if (target.includes('উপ সম্পাদক')) return 21;
-            if (target.includes('নির্বাহী সদস্য')) return 22;
+            if (target.includes('নির্বাহী সদস্য')) return 23;
 
             // 1. Follow exact order configured in Master Settings (LEADER_DESIGNATIONS)
             for (let i = 0; i < LEADER_DESIGNATIONS.length; i++) {
@@ -1342,6 +1343,7 @@
             if (target === 'সভাপতি' || (target.includes('সভাপতি') && !target.includes('সহ'))) return 1;
             if (target.includes('যুগ্ম সাধারণ') || target.includes('যুগ্ম সেক্রেটার')) return 4;
             if (target.includes('সাধারণ সম্পাদক') || target.includes('সাধারণ সম্পাদ') || target.includes('সেক্রেটার')) return 3;
+            if (target.includes('সাংগঠনিক') && target.includes('২')) return 6;
             if (target.includes('সাংগঠনিক')) return 5;
             if (target.includes('দফতর') || target.includes('দপ্তর')) return 7;
             if (target.includes('প্রশিক্ষণ') || target.includes('প্রশিক্ষন')) return 8;
