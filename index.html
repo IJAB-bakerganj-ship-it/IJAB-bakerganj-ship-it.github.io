@@ -1329,6 +1329,9 @@
             if (target.includes('উপ সম্পাদক')) return 21;
             if (target.includes('নির্বাহী সদস্য')) return 23;
 
+            // Priority check for Mohila o Poribar Kollyan (even with spelling typos like 'সম্পাদঃ')
+            if (target.includes('মহিলা') || target.includes('পরিবার কল্যাণ')) return 20;
+
             // 1. Follow exact order configured in Master Settings (LEADER_DESIGNATIONS)
             for (let i = 0; i < LEADER_DESIGNATIONS.length; i++) {
                 const itemNorm = normalizeDesignationKey(LEADER_DESIGNATIONS[i])
