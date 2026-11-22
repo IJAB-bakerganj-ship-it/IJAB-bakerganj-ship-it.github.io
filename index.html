@@ -618,7 +618,7 @@
     <footer class="bg-white border-t border-gray-200/80 py-4 px-4 text-center text-xs text-gray-500 mt-auto no-print">
         <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <p class="font-bold text-primary">ইসলামী যুব আন্দোলন বাংলাদেশ • বাকেরগঞ্জ উপজেলা শাখা</p>
-            <p class="text-[11px] text-gray-400">ডিজিটাল সাংগঠনিক ও বায়তুলমাল ব্যবস্থাপনা পোর্টাল • v3.0</p>
+            <p class="text-[11px] text-gray-400">ডিজিটাল সাংগঠনিক ও বায়তুলমাল ব্যবস্থাপনা পোর্টাল • v2.6</p>
         </div>
     </footer>
 
@@ -777,7 +777,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">সাংগঠনিক শাখা (ইউনিয়ন/উপজেলা) *</label>
-                    <select id="person-union" required onchange="onPersonUnionChange()" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold"></select>
+                    <select id="person-union" required class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold"></select>
                 </div>
 
                 <div>
@@ -1141,83 +1141,96 @@
             "নিয়ামতি ইউনিয়ন", "বোয়ালিয়া সাংগঠনিক ইউনিয়ন"
         ];
 
-        // উপজেলা কমিটি (২১ সদস্য বিশিষ্ট)
-        const UPAZILA_DESIGNATIONS = [
+        const DEFAULT_LEADER_DESIGNATIONS = [
             "সভাপতি", "সহ-সভাপতি", "সাধারণ সম্পাদক", "যুগ্ম সাধারণ সম্পাদক",
             "সাংগঠনিক সম্পাদক", "সাংগঠনিক সম্পাদক (২)", "দফতর সম্পাদক", "প্রশিক্ষণ সম্পাদক",
             "দাওয়া সম্পাদক", "প্রচার সম্পাদক", "প্রকাশনা সম্পাদক", "অর্থ সম্পাদক",
             "যুব উন্নয়ন সম্পাদক", "কর্মসংস্থান সম্পাদক", "শিক্ষা ও সংস্কৃতি সম্পাদক",
             "বিজ্ঞান ও প্রযুক্তি সম্পাদক", "তথ্য ও গবেষণা সম্পাদক", "ত্রাণ ও সমাজকল্যাণ সম্পাদক",
-            "স্বাস্থ্য ও পরিবেশ সম্পাদক", "উপ-সম্পাদক", "উপ-সম্পাদক (২)"
+            "স্বাস্থ্য ও পরিবেশ সম্পাদক", "মহিলা ও পরিবার কল্যাণ সম্পাদক",
+            "উপ-সম্পাদক", "উপ-সম্পাদক (২)"
         ];
-
-        // ইউনিয়ন ও পৌরসভা কমিটি (১৭ সদস্য বিশিষ্ট - গঠনতন্ত্র ফরম অনুযায়ী)
-        const UNION_DESIGNATIONS = [
-            "সভাপতি", "সহ-সভাপতি", "সাধারণ সম্পাদক", "যুগ্ম সাধারণ সম্পাদক",
-            "সাংগঠনিক সম্পাদক", "দফতর সম্পাদক", "প্রচার সম্পাদক", "প্রকাশনা সম্পাদক",
-            "অর্থ সম্পাদক", "দাওয়াহ ও প্রশিক্ষণ সম্পাদক", "যুব উন্নয়ন ও কর্মসংস্থান সম্পাদক",
-            "শিক্ষা ও সংস্কৃতি সম্পাদক", "ত্রাণ ও সমাজকল্যাণ সম্পাদক", "স্বাস্থ্য ও পরিবেশ সম্পাদক",
-            "উপ-সম্পাদক", "উপ-সম্পাদক (২)", "উপ-সম্পাদক (৩)"
-        ];
-
-        const DEFAULT_LEADER_DESIGNATIONS = [...UPAZILA_DESIGNATIONS];
-        let LEADER_DESIGNATIONS = [...UPAZILA_DESIGNATIONS];
-
-        function isUpazilaBranch(unionName) {
-            return String(unionName || '').trim() === 'বাকেরগঞ্জ উপজেলা শাখা';
-        }
-
-        function getDesignationsForBranch(unionName) {
-            return isUpazilaBranch(unionName) ? UPAZILA_DESIGNATIONS : UNION_DESIGNATIONS;
-        }
+        let LEADER_DESIGNATIONS = [...DEFAULT_LEADER_DESIGNATIONS];
 
         const MONTHS_BN = [
             "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
             "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
         ];
 
-        const DEFAULT_ADMINS = [
-            { id: 'master1', name: 'উপজেলা মাস্টার অ্যাডমিন', union: 'ALL', phone: '01787265892', pin: '12345', role: 'super' },
-            { id: 'master2', name: 'উপজেলা সাধারণ সম্পাদক', union: 'ALL', phone: '01712000000', pin: '12345', role: 'super' }
+        const UPAZILA_LEADERS_PRESET = [
+            { id: 'upz_1', type: 'leader', name: 'মাওলানা মুহাঃ জাহিদ রায়হান', designation: 'সভাপতি', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01787265892', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_2', type: 'leader', name: 'আর কে খলিফা রাকিব', designation: 'সহ-সভাপতি', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01955144533', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_3', type: 'leader', name: 'মাওলানা গাজী সাইফুল ইসলাম', designation: 'সাধারণ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01611110439', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_4', type: 'leader', name: 'মাওঃ মুহাঃ মেহেদী হাসান চৌধুরী', designation: 'যুগ্ম সাধারণ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01716834335', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_5', type: 'leader', name: 'মাওঃ মুহাঃ মুস্তাকিম বিল্লাহ', designation: 'সাংগঠনিক সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01861041404', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_6', type: 'leader', name: 'মুহাম্মাদ মিরন হাওলাদার', designation: 'সাংগঠনিক সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01728153601', bloodGroup: '', fixedIyanat: 0, serialOrder: 2, photo: '' },
+            { id: 'upz_7', type: 'leader', name: 'মুহাঃ ফেরদাউস আলম কামাল', designation: 'দফতর সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01722595928', bloodGroup: '', fixedIyanat: 0, serialOrder: 1, photo: '' },
+            { id: 'upz_8', type: 'leader', name: 'মাওলানা মুহাঃ রফিকুল ইসলাম বোখারী', designation: 'প্রশিক্ষণ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01714520148', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_9', type: 'leader', name: 'ক্বারী মাজহারুল ইসলাম মাজহারি', designation: 'দাওয়া সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01731456285', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_10', type: 'leader', name: 'মুহাঃ মেনান বিশ্বাস', designation: 'প্রচার সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01818111495', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_11', type: 'leader', name: 'মাওলানা মুহাঃ রবিউল ইসলাম', designation: 'প্রকাশনা সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01712435185', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_12', type: 'leader', name: 'মুহাঃ আসাদুজ্জামান', designation: 'অর্থ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01728673322', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_13', type: 'leader', name: 'মুহাঃ রফিকুল ইসলাম', designation: 'যুব উন্নয়ন সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01879149237', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_14', type: 'leader', name: 'মুহাঃ নাসিরুদ্দিন', designation: 'কর্মসংস্থান সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01715233240', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_15', type: 'leader', name: 'মুহাঃ নাহিদ হাসান', designation: 'শিক্ষা ও সংস্কৃতি সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01782444063', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_16', type: 'leader', name: 'এইচ এম সালাউদ্দিন মাসরুর', designation: 'বিজ্ঞান ও প্রযুক্তি সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01718823036', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_17', type: 'leader', name: 'মুহাঃ সৌরভ হাওলাদার', designation: 'তথ্য ও গবেষণা সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01772951745', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_18', type: 'leader', name: 'মুহাঃ রেজাউল করিম', designation: 'ত্রাণ ও সমাজকল্যাণ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01781674467', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_19', type: 'leader', name: 'মুফতী মুহাঃ সাব্বির আহম্মেদ', designation: 'স্বাস্থ্য ও পরিবেশ সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01670572001', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_20', type: 'leader', name: 'হাফেজ নাঈমুর রহমান', designation: 'উপ-সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01319823336', bloodGroup: '', fixedIyanat: 0, photo: '' },
+            { id: 'upz_21', type: 'leader', name: 'আব্দুল্লাহ আননোমান', designation: 'উপ-সম্পাদক', union: 'বাকেরগঞ্জ উপজেলা শাখা', phone: '01878984866', bloodGroup: '', fixedIyanat: 0, photo: '' }
         ];
 
-        const UPAZILA_LEADERS_PRESET = [];
-        const IMGBB_API_KEY = "6d207e02198a847aa98d0a2a901485a5";
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ijab-bakerganj-portal';
+        const DEFAULT_ADMINS = [
+            { id: "master1", name: "মাস্টার অ্যাডমিন (উপজেলা)", phone: "01787265892", pin: "12345", role: "super", union: "ALL" },
+            { id: "master2", name: "সহ-মাস্টার অ্যাডমিন", phone: "01744432350", pin: "12345", role: "super", union: "ALL" }
+        ];
 
-        const LIVE_FIREBASE_CONFIG = (typeof __firebase_config !== 'undefined')
-            ? JSON.parse(__firebase_config)
-            : {
-                apiKey: "AIzaSyDummyKeyForFallback",
-                authDomain: "ijab-bakerganj.firebaseapp.com",
-                projectId: "ijab-bakerganj",
-                storageBucket: "ijab-bakerganj.appspot.com",
-                messagingSenderId: "000000000000",
-                appId: "1:000000000000:web:000000000000"
-            };
+        const IMGBB_API_KEY = "83d9e310c0816f055a8d15e6bf44a1f2";
 
-        let db = null, auth = null, isFirebaseReady = false;
+        // Live Firebase Config (IJAB Bakerganj)
+        const LIVE_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAx5CAqZZIIzXLmP8TvzSwlOApYq4PE4wI",
+            authDomain: "ijab-bakerganj.firebaseapp.com",
+            projectId: "ijab-bakerganj",
+            storageBucket: "ijab-bakerganj.firebasestorage.app",
+            messagingSenderId: "893273342378",
+            appId: "1:893273342378:web:91d803ada0fc7649cdebd3",
+            measurementId: "G-ZJMM3F4CD0"
+        };
+
+        let db = null, auth = null, appId = 'ijab-bakerganj';
+        let isFirebaseReady = false;
+
+        // Data Stores
+        let newPeopleDocs = [];
+        let legacyMembersDocs = [];
+        let peopleData = [...UPAZILA_LEADERS_PRESET];
+
+        let newFinanceDocs = [];
+        let legacyTxDocs = [];
+        let financeData = [];
+
+        let attendanceData = [];
+        let adminsData = [...DEFAULT_ADMINS];
+        let currentNotice = null;
         let currentUser = null;
         let currentTab = 'dashboard';
         let currentFinSubTab = 'collection';
         let currentLedgerFilter = 'ALL';
         let selectedPersonForModal = null;
         let selectedPhotoBase64 = null;
-        let currentNotice = null;
 
-        let peopleData = [];
-        let newPeopleDocs = [];
-        let legacyMembersDocs = [];
-        let financeData = [];
-        let newFinanceDocs = [];
-        let legacyTxDocs = [];
-        let attendanceData = [];
-        let adminsData = [...DEFAULT_ADMINS];
-
+        // Safe session storage wrapper (works inside sandboxed iframe previews)
         function saveSessionUser(userObj) {
             try {
-                if (window.sessionStorage) {
-                    sessionStorage.setItem('ijab_bakerganj_user', JSON.stringify(userObj));
+                if (window.name) {
+                    const parsed = JSON.parse(window.name);
+                    if (parsed && typeof parsed === 'object') {
+                        parsed.ijabUser = userObj;
+                        window.name = JSON.stringify(parsed);
+                        return;
+                    }
                 }
             } catch (e) {}
             try {
@@ -1297,46 +1310,38 @@
         }
 
         function normalizeDesignationKey(str) {
-            return String(str || '').normalize('NFC').trim();
+            return String(str || '')
+                .normalize('NFC')
+                .replace(/[:ঃ]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
-        function getLeaderDesignationRank(designation, unionName = '') {
+        function getLeaderDesignationRank(designation) {
             const target = normalizeDesignationKey(designation)
                 .replace(/[-–—]/g, ' ')
                 .replace(/\s+/g, ' ')
                 .trim();
             if (!target) return 999;
 
-            // উপ-সম্পাদক সবসময় কমিটির সবার শেষে থাকবে
-            if (target.includes('উপ সম্পাদক')) {
-                if (target.includes('৩')) return 92;
-                if (target.includes('২')) return 91;
-                return 90;
-            }
-            if (target.includes('নির্বাহী সদস্য')) return 95;
+            // Priority check for Upa-Shompadok & Nirbahi Shodoshsho so they ALWAYS stay at the bottom
+            if (target.includes('উপ সম্পাদক') && target.includes('২')) return 22;
+            if (target.includes('উপ সম্পাদক')) return 21;
+            if (target.includes('নির্বাহী সদস্য')) return 23;
 
-            // ইউনিয়ন ও পৌরসভা কমিটি (১৭ সদস্যের ফরম অনুযায়ী ক্রম)
-            if (unionName && !isUpazilaBranch(unionName)) {
-                if (target.includes('সহ সভাপতি')) return 2;
-                if (target === 'সভাপতি' || (target.includes('সভাপতি') && !target.includes('সহ'))) return 1;
-                if (target.includes('যুগ্ম সাধারণ') || target.includes('যুগ্ম সেক্রেটার')) return 4;
-                if (target.includes('সাধারণ সম্পাদক') || target.includes('সাধারণ সম্পাদ') || target.includes('সেক্রেটার')) return 3;
-                if (target.includes('সাংগঠনিক')) return 5;
-                if (target.includes('দফতর') || target.includes('দপ্তর')) return 6;
-                if (target.includes('প্রচার')) return 7;
-                if (target.includes('প্রকাশনা')) return 8;
-                if (target.includes('অর্থ')) return 9;
-                if (target.includes('দাওয়াহ') || target.includes('দাওয়া') || target.includes('প্রশিক্ষণ') || target.includes('প্রশিক্ষন')) return 10;
-                if (target.includes('যুব উন্নয়ন') || target.includes('যুব উন্নয়ন') || target.includes('কর্মসংস্থান')) return 11;
-                if (target.includes('শিক্ষা ও সংস্কৃতি')) return 12;
-                if (target.includes('ত্রাণ ও সমাজকল্যাণ')) return 13;
-                if (target.includes('স্বাস্থ্য ও পরিবেশ')) return 14;
-                // যদি কোনো অতিরিক্ত সম্পাদক (যেমন মহিলা ও পরিবার কল্যাণ) যুক্ত থাকে, তবে স্বাস্থ্য ও পরিবেশের পরে এবং উপ-সম্পাদকের আগে থাকবে
-                if (target.includes('সম্পাদক') || target.includes('সম্পাদ')) return 14.5;
-                return 80;
+            // Priority check for Mohila o Poribar Kollyan (even with spelling typos like 'সম্পাদঃ')
+            if (target.includes('মহিলা') || target.includes('পরিবার কল্যাণ')) return 20;
+
+            // 1. Follow exact order configured in Master Settings (LEADER_DESIGNATIONS)
+            for (let i = 0; i < LEADER_DESIGNATIONS.length; i++) {
+                const itemNorm = normalizeDesignationKey(LEADER_DESIGNATIONS[i])
+                    .replace(/[-–—]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                if (itemNorm === target) return i + 1;
             }
 
-            // উপজেলা কমিটি (২১ সদস্যের ক্রম)
+            // 2. Fallback keyword matching for slight spelling/typo differences in DB (like 'সম্পাদঃ')
             if (target.includes('সহ সভাপতি')) return 2;
             if (target === 'সভাপতি' || (target.includes('সভাপতি') && !target.includes('সহ'))) return 1;
             if (target.includes('যুগ্ম সাধারণ') || target.includes('যুগ্ম সেক্রেটার')) return 4;
@@ -1356,16 +1361,15 @@
             if (target.includes('তথ্য ও গবেষণা')) return 17;
             if (target.includes('ত্রাণ ও সমাজকল্যাণ')) return 18;
             if (target.includes('স্বাস্থ্য ও পরিবেশ')) return 19;
-            if (target.includes('সম্পাদক') || target.includes('সম্পাদ')) return 19.5;
+            if (target.includes('মহিলা ও পরিবার')) return 20;
+            if (target.includes('সম্পাদক') || target.includes('সম্পাদ')) return 20;
 
-            return 80;
+            return 999;
         }
 
         function compareLeadersByHierarchy(a, b) {
-            const branchA = a.union || '';
-            const branchB = b.union || '';
-            const rA = getLeaderDesignationRank(a.designation, branchA);
-            const rB = getLeaderDesignationRank(b.designation, branchB);
+            const rA = getLeaderDesignationRank(a.designation);
+            const rB = getLeaderDesignationRank(b.designation);
             if (rA !== rB) return rA - rB;
 
             const sA = Number(a.serialOrder || 999);
@@ -1547,7 +1551,7 @@
             }, (err) => {
                 document.getElementById('loading-spinner').classList.add('hidden');
                 showPermissionWarning(err);
-                loadDemoData();
+                mergeAllPeopleData();
             });
 
             // 2. Legacy Members (Old photos)
@@ -2208,17 +2212,15 @@ ${rankingLines}
         };
 
         // --- DESIGNATION DROPDOWN & ADD/EDIT PERSON ---
-        function populateDesignationOptions(type, selectedVal = '', branchName = '') {
+        function populateDesignationOptions(type, selectedVal = '') {
             const sel = document.getElementById('person-designation-select');
             const customInput = document.getElementById('person-designation-custom');
             sel.innerHTML = '';
 
             if (type === 'leader') {
-                const activeBranch = branchName || document.getElementById('person-union')?.value || UNIONS[0];
-                const branchDesignations = getDesignationsForBranch(activeBranch);
-                const orderedDesignations = [...new Set([...branchDesignations, ...LEADER_DESIGNATIONS.filter(d => !UPAZILA_DESIGNATIONS.includes(d) && !UNION_DESIGNATIONS.includes(d))])];
-                orderedDesignations.forEach((d, i) => {
-                    sel.innerHTML += `<option value="${d}">${toBengaliDigits(i + 1)}. ${d}</option>`;
+                const orderedDesignations = [...new Set([...DEFAULT_LEADER_DESIGNATIONS, ...LEADER_DESIGNATIONS])];
+                orderedDesignations.forEach(d => {
+                    sel.innerHTML += `<option value="${d}">${d}</option>`;
                 });
                 sel.innerHTML += `<option value="__CUSTOM__">অন্যান্য (নিজে লিখুন)</option>`;
                 if (selectedVal && orderedDesignations.includes(selectedVal)) {
@@ -2231,7 +2233,7 @@ ${rankingLines}
                     customInput.classList.remove('hidden');
                     customInput.required = true;
                 } else {
-                    sel.value = orderedDesignations[0];
+                    sel.value = LEADER_DESIGNATIONS[0];
                     customInput.classList.add('hidden');
                     customInput.required = false;
                 }
@@ -2268,20 +2270,7 @@ ${rankingLines}
         }
 
         window.onPersonTypeChange = function() {
-            populateDesignationOptions(
-                document.getElementById('person-type').value,
-                '',
-                document.getElementById('person-union').value
-            );
-        };
-
-        window.onPersonUnionChange = function() {
-            const currentDesig = document.getElementById('person-designation-select').value;
-            populateDesignationOptions(
-                document.getElementById('person-type').value,
-                currentDesig === '__CUSTOM__' ? document.getElementById('person-designation-custom').value : currentDesig,
-                document.getElementById('person-union').value
-            );
+            populateDesignationOptions(document.getElementById('person-type').value);
         };
 
         window.onDesignationSelectChange = function() {
@@ -2330,7 +2319,7 @@ ${rankingLines}
                 document.getElementById('person-type').value = personToEdit.type;
                 document.getElementById('person-union').value = personToEdit.union;
                 document.getElementById('person-name').value = personToEdit.name;
-                populateDesignationOptions(personToEdit.type, personToEdit.designation, personToEdit.union);
+                populateDesignationOptions(personToEdit.type, personToEdit.designation);
                 document.getElementById('person-blood').value = personToEdit.bloodGroup || '';
                 document.getElementById('person-phone').value = personToEdit.phone;
                 document.getElementById('person-fixed-iyanat').value = personToEdit.fixedIyanat || '';
@@ -2342,7 +2331,7 @@ ${rankingLines}
                 const typeMap = { 'leaders': 'leader', 'members': 'member', 'sudhi': 'sudhi' };
                 const t = typeMap[currentTab] || 'leader';
                 document.getElementById('person-type').value = t;
-                populateDesignationOptions(t, '', unionSelect.value);
+                populateDesignationOptions(t);
                 document.getElementById('person-serial-order').value = '';
                 document.getElementById('person-photo-preview').src = getAvatarDataUrl('ছ');
             }
@@ -3527,7 +3516,7 @@ ${rankingLines}
             if (!container) return;
             container.innerHTML = UNIONS.map(u => {
                 const leaders = peopleData.filter(p => p.union === u && p.type === 'leader');
-                const gs = leaders.find(l => getLeaderDesignationRank(l.designation, u) === 3);
+                const gs = leaders.find(l => getLeaderDesignationRank(l.designation) === 3);
                 const misplacedGs = !gs ? peopleData.find(p => p.union === u && p.type !== 'leader' && (String(p.designation || '').includes('সাধারণ') || String(p.designation || '').includes('সেক্রেটার'))) : null;
 
                 if (gs) {
