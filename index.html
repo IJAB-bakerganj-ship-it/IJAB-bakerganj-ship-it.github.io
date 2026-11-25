@@ -1004,7 +1004,7 @@
             <form onsubmit="saveNotice(event)" class="p-4 space-y-3.5">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">কোন শাখা / ইউনিয়নের নোটিশ? *</label>
-                    <select id="notice-input-union" required class="w-full px-3 py-2 bg-amber-50/60 border border-amber-200 rounded-xl text-xs font-bold text-gray-900">
+                    <select id="notice-input-union" required onchange="loadNoticeFormForUnion(this.value)" class="w-full px-3 py-2 bg-amber-50/60 border border-amber-200 rounded-xl text-xs font-bold text-gray-900">
                         <option value="ALL">সকল শাখা / উপজেলা (সাধারণ নোটিশ)</option>
                     </select>
                 </div>
@@ -3310,25 +3310,32 @@ ${rankingLines}
                         }).join('');
                     }
                 }
-
                 if (editBtn) {
                     if (currentUser) editBtn.classList.remove('hidden');
                     else editBtn.classList.add('hidden');
                 }
             } else {
                 banner.classList.add('hidden');
-                if (detailCard) {
-                    if (currentUser) {
-                        detailCard.classList.remove('hidden');
-                        if (listContainer) {
-                            listContainer.innerHTML = `<div class="p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-500 text-center">কোনো নোটিশ প্রকাশিত হয়নি। উপরে "+ নোটিশ দিন" চাপ দিয়ে নোটিশ প্রকাশ করুন।</div>`;
-                        }
-                    } else {
-                        detailCard.classList.add('hidden');
-                    }
+                if (dashPostBtn) {
+                    if (currentUser) dashPostBtn.classList.remove('hidden');
+                    else dashPostBtn.classList.add('hidden');
                 }
+                if (detailCard) detailCard.classList.remove('hidden');
+                if (listContainer) {
+                    listContainer.innerHTML = `<div class="p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-500 text-center">${currentUser ? 'কোনো নোটিশ প্রকাশিত হয়নি। উপরে "+ নোটিশ দিন" চাপ দিয়ে নোটিশ প্রকাশ করুন।' : 'বর্তমানে কোনো সক্রিয় নোটিশ নেই।'}</div>`;
+                }
+                if (editBtn) editBtn.classList.add('hidden');
             }
         }
+
+        window.loadNoticeFormForUnion = function(unionKey) {
+            const existing = noticesByUnion[unionKey] || null;
+            const catEl = document.getElementById('notice-input-category');
+            if (catEl) catEl.value = existing?.category || 'জরুরি নোটিশ';
+            document.getElementById('notice-input-title').value = existing?.title || '';
+            document.getElementById('notice-input-date').value = existing?.dateInfo || '';
+            document.getElementById('notice-input-desc').value = existing?.desc || '';
+        };
 
         window.openNoticeModal = function(presetUnion = null) {
             if (!currentUser) {
@@ -3347,13 +3354,7 @@ ${rankingLines}
                 unionSelect.disabled = false;
                 unionSelect.value = targetUnion;
             }
-
-            const existing = noticesByUnion[targetUnion] || null;
-            const catEl = document.getElementById('notice-input-category');
-            if (catEl) catEl.value = existing?.category || 'জরুরি নোটিশ';
-            document.getElementById('notice-input-title').value = existing?.title || '';
-            document.getElementById('notice-input-date').value = existing?.dateInfo || '';
-            document.getElementById('notice-input-desc').value = existing?.desc || '';
+            loadNoticeFormForUnion(targetUnion);
             document.getElementById('notice-modal').classList.remove('hidden');
         };
 
